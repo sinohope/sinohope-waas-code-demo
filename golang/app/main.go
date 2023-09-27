@@ -49,16 +49,7 @@ func main() {
 		Debugf("callback-demo init")
 
 	r := gin.Default()
-	v1 := r.Group("/v1")
-	callback := v1.Group("/call_back")
-	transaction := callback.Group("/transaction")
-	{
-		transaction.POST("/notify", handlers.TransactionNotify)
-	}
-	withdrawal := callback.Group("/withdrawal")
-	{
-		withdrawal.POST("/confirm", handlers.WithdrawalConfirm)
-	}
+	r.Any("/*any", handlers.Any)
 
 	logrus.Infof("prepare to start callback-demo at %v...", *address)
 	if err := r.Run(*address); err != nil {
