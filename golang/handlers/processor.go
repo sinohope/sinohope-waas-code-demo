@@ -58,9 +58,10 @@ func process(g *gin.Context) {
 		}
 		logrus.Errorf("%v", msg)
 		g.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"code":    1005,
-			"msg":     msg,
+			"success":   false,
+			"code":      1005,
+			"msg":       msg,
+			"requestId": request.RequestId,
 		})
 		return
 	}
@@ -75,8 +76,9 @@ func process(g *gin.Context) {
 			Infof("approve withdrawal")
 	}
 	g.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"code":    200,
-		"action":  action,
+		"success":   true,
+		"code":      200,
+		"action":    action,
+		"requestId": request.RequestId,
 	})
 }
