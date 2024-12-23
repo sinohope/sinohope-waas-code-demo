@@ -2,22 +2,16 @@ package verify
 
 import (
 	"encoding/hex"
-	"encoding/json"
 	"sort"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 
 	"github.com/sinohope/sinohope-waas-code-demo/verify/crypto"
-
-	"github.com/sinohope/sinohope-waas-code-demo/common"
 )
 
-func Verify(path, key, nonce, signature string, request *common.Request) (bool, error) {
-	payload, err := json.Marshal(request)
-	if err != nil {
-		return false, err
-	}
-	message := request2Message(key, path, nonce, string(payload))
+func Verify(path, key, nonce, signature, body string) (bool, error) {
+	message := request2Message(key, path, nonce, body)
 	return crypto.Verify(key, message, signature)
 }
 
@@ -38,6 +32,8 @@ func request2Message(key, path, timestamp, payload string) string {
 		signature += k + data[k]
 	}
 	signature += key
+	signature = strings.ReplaceAll(signature, "\n", "")
+	signature = strings.ReplaceAll(signature, " ", "")
 	message := hex.EncodeToString([]byte(signature))
 	logrus.Infof("message to be verify, %v", message)
 	return message
