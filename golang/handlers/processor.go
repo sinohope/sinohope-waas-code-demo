@@ -1,14 +1,11 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	golang "github.com/sinohope/sinohope-waas-code-demo/verify"
-
-	"github.com/sinohope/sinohope-waas-code-demo/common"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -38,18 +35,7 @@ func process(g *gin.Context) {
 	logrus.
 		WithField("body", string(body)).
 		Infof("request body")
-
-	request := &common.Request{}
-	if err := json.Unmarshal(body, request); err != nil {
-		logrus.Errorf("prase request body failed, %v", err)
-		g.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"code":    1005,
-			"msg":     "failed to parse request body, reason: " + err.Error(),
-		})
-		return
-	}
-	if ok, err := golang.Verify(g.Request.URL.Path, apiKey, apiNonce, apiSignature, request); !ok {
+	if ok, err := golang.Verify(g.Request.URL.Path, apiKey, apiNonce, apiSignature, string(body)); !ok {
 		var msg string
 		if err != nil {
 			msg = fmt.Sprintf("verify request failed, %v", err)
